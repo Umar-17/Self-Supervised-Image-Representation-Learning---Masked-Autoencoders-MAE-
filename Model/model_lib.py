@@ -15,7 +15,7 @@ class MaskedAutoencoder(nn.Module):
     def __init__(self):
         super().__init__()
         
-        # Encoder: ViT-Base
+   
         self.patch_embed = PatchEmbed(img_size=224, patch_size=16, embed_dim=768)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, 768))
         self.pos_embed = nn.Parameter(torch.zeros(1, self.patch_embed.num_patches + 1, 768))
@@ -23,7 +23,7 @@ class MaskedAutoencoder(nn.Module):
         encoder_layer = nn.TransformerEncoderLayer(d_model=768, nhead=12, dim_feedforward=3072, activation='gelu', batch_first=True)
         self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=12) 
         
-        # Decoder: ViT-Small
+        
         self.decoder_embed = nn.Linear(768, 384) 
         self.mask_token = nn.Parameter(torch.zeros(1, 1, 384)) 
         self.decoder_pos_embed = nn.Parameter(torch.zeros(1, self.patch_embed.num_patches + 1, 384))
@@ -31,7 +31,7 @@ class MaskedAutoencoder(nn.Module):
         decoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6, dim_feedforward=1536, activation='gelu', batch_first=True)
         self.decoder = nn.TransformerEncoder(decoder_layer, num_layers=12)
         
-        # Prediction head
+        
         self.decoder_pred = nn.Linear(384, 16**2 * 3) 
 
     def random_masking(self, x, mask_ratio=0.75):
@@ -71,4 +71,9 @@ class MaskedAutoencoder(nn.Module):
         x_ = torch.cat([x[:, 1:, :], mask_tokens], dim=1)
         x_ = torch.gather(x_, dim=1, index=ids_restore.unsqueeze(-1).repeat(1, 1, x.shape[2]))
         
-        x = torch.cat([x[:, :1, :], x_], dim
+        x = torch.cat([x[:, :1, :], x_], dim=1)
+        x = x + self.decoder_pos_embed
+        x = self.decoder(x)
+        
+        x = self.decoder_pred(x)
+        return x
