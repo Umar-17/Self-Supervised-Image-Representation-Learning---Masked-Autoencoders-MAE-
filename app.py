@@ -31,7 +31,7 @@ def unpatchify(x):
 @st.cache_resource
 def load_trained_model():
     model = MaskedAutoencoder()
-    weights_path = "Model/mae_weights.pth"
+    weights_path = "Model/mae_weights_40ep.pth"
     model.load_state_dict(torch.load(weights_path, map_location=torch.device('cpu')))
     model.eval()
     return model
