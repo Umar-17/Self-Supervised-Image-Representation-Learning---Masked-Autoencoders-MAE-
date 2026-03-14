@@ -51,6 +51,7 @@ class MaskedAutoencoder(nn.Module):
     def forward_encoder(self, x, mask_ratio):
         x = self.patch_embed(x)
         x = x + self.pos_embed[:, 1:, :]
+        
         x, mask, ids_restore = self.random_masking(x, mask_ratio)
         
         cls_token = self.cls_token + self.pos_embed[:, :1, :]
@@ -62,20 +63,21 @@ class MaskedAutoencoder(nn.Module):
 
     def forward_decoder(self, x, ids_restore):
         x = self.decoder_embed(x)
+        
         mask_tokens = self.mask_token.repeat(x.shape[0], ids_restore.shape[1] + 1 - x.shape[1], 1)
         x_ = torch.cat([x[:, 1:, :], mask_tokens], dim=1)
         x_ = torch.gather(x_, dim=1, index=ids_restore.unsqueeze(-1).repeat(1, 1, x.shape[2]))
         
         x = torch.cat([x[:, :1, :], x_], dim=1)
         x = x + self.decoder_pos_embed
+        
         x = self.decoder(x)
         x = self.decoder_pred(x)
         
-     
-        return x[:, 1:, :]
+        x = x[:, 1:, :]
+        return x
 
     def forward(self, imgs, mask_ratio=0.75):
-        
         latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio)
         pred = self.forward_decoder(latent, ids_restore)
         return pred, mask
