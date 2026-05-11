@@ -67,14 +67,10 @@ if uploaded_file:
     target = torch.einsum('nchpwq->nhwpqc', target)
     target = target.reshape(shape=(img_tensor.shape[0], h * w, p**2 * 3))
 
-   
-    mean_patch = target.mean(dim=-1, keepdim=True)
-    var_patch = target.var(dim=-1, keepdim=True)
-    pred_unnorm = pred * (var_patch + 1.e-6)**.5 + mean_patch
-
     mask_vis = mask.unsqueeze(-1).repeat(1, 1, 16**2 * 3)
     
-    recon_patches = target * (1 - mask_vis) + pred_unnorm * mask_vis
+    recon_patches = target * (1 - mask_vis) + pred * mask_vis
+
     recon_imgs = unpatchify(recon_patches)
     
     masked_img_patches = target * (1 - mask_vis)
