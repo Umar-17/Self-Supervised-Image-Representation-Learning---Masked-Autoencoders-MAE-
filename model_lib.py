@@ -8,28 +8,30 @@ class PatchEmbed(nn.Module):
         self.proj = nn.Conv2d(in_chans, embed_dim, kernel_size=patch_size, stride=patch_size)
 
     def forward(self, x):
+        # [B, 3, 224, 224] -> [B, 768, 14, 14] -> [B, 768, 196] -> [B, 196, 768]
         x = self.proj(x).flatten(2).transpose(1, 2)
         return x
 
 class MaskedAutoencoder(nn.Module):
     def __init__(self):
         super().__init__()
-        
+        # Encoder Hyperparameters (Standard ViT-Base)
         self.patch_embed = PatchEmbed(img_size=224, patch_size=16, embed_dim=768)
         self.cls_token = nn.Parameter(torch.zeros(1, 1, 768))
         self.pos_embed = nn.Parameter(torch.zeros(1, self.patch_embed.num_patches + 1, 768))
         
         encoder_layer = nn.TransformerEncoderLayer(d_model=768, nhead=12, dim_feedforward=3072, activation='gelu', batch_first=True)
-        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=12) 
+        self.encoder = nn.TransformerEncoder(encoder_layer, num_layers=12)
         
-        self.decoder_embed = nn.Linear(768, 384) 
-        self.mask_token = nn.Parameter(torch.zeros(1, 1, 384)) 
+        # Decoder Hyperparameters
+        self.decoder_embed = nn.Linear(768, 384)
+        self.mask_token = nn.Parameter(torch.zeros(1, 1, 384))
         self.decoder_pos_embed = nn.Parameter(torch.zeros(1, self.patch_embed.num_patches + 1, 384))
         
         decoder_layer = nn.TransformerEncoderLayer(d_model=384, nhead=6, dim_feedforward=1536, activation='gelu', batch_first=True)
         self.decoder = nn.TransformerEncoder(decoder_layer, num_layers=12)
         
-        self.decoder_pred = nn.Linear(384, 16**2 * 3) 
+        self.decoder_pred = nn.Linear(384, 16**2 * 3) # Predicts normalized pixel values
 
     def random_masking(self, x, mask_ratio=0.75):
         B, N, D = x.shape
@@ -51,7 +53,6 @@ class MaskedAutoencoder(nn.Module):
     def forward_encoder(self, x, mask_ratio):
         x = self.patch_embed(x)
         x = x + self.pos_embed[:, 1:, :]
-        
         x, mask, ids_restore = self.random_masking(x, mask_ratio)
         
         cls_token = self.cls_token + self.pos_embed[:, :1, :]
@@ -63,19 +64,16 @@ class MaskedAutoencoder(nn.Module):
 
     def forward_decoder(self, x, ids_restore):
         x = self.decoder_embed(x)
-        
         mask_tokens = self.mask_token.repeat(x.shape[0], ids_restore.shape[1] + 1 - x.shape[1], 1)
+        
         x_ = torch.cat([x[:, 1:, :], mask_tokens], dim=1)
         x_ = torch.gather(x_, dim=1, index=ids_restore.unsqueeze(-1).repeat(1, 1, x.shape[2]))
         
         x = torch.cat([x[:, :1, :], x_], dim=1)
         x = x + self.decoder_pos_embed
-        
         x = self.decoder(x)
         x = self.decoder_pred(x)
-        
-        x = x[:, 1:, :]
-        return x
+        return x[:, 1:, :] # Remove CLS token for reconstruction
 
     def forward(self, imgs, mask_ratio=0.75):
         latent, mask, ids_restore = self.forward_encoder(imgs, mask_ratio)

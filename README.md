@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org/)
-[![Streamlit](https://img.shields.io/badge/Streamlit-App-FF4B4B?logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Gradio](https://img.shields.io/badge/Gradio-App-FF4B4B?logo=gradio&logoColor=white)](https://gradio.app/)
 [![Kaggle](https://img.shields.io/badge/Kaggle-Notebook-20BEFF?logo=kaggle&logoColor=white)](https://www.kaggle.com/)
 [![Dataset](https://img.shields.io/badge/Dataset-TinyImageNet-orange)](https://www.kaggle.com/datasets/akash2sharma/tiny-imagenet)
 
@@ -26,7 +26,7 @@
 - [Tech Stack](#-tech-stack)
 - [Getting Started](#-getting-started)
 - [Training](#-training)
-- [Streamlit App](#-streamlit-app)
+- [Gradio App](#-gradio-app)
 - [Results](#-results)
 - [Assignment Context](#-assignment-context)
 - [License](#-license)
@@ -121,7 +121,7 @@ Input Image (224×224)
  ┃ ┗ 📄 mae_weights.pth       # Pre-trained model weights (~411 MB)
  ┣ 📂 Notebook
  ┃ ┗ 📓 MAE_Training.ipynb    # Full Kaggle training notebook
- ┣ 📄 app.py                  # Streamlit interactive app
+ ┣ 📄 app.py                  # Gradio interactive app
  ┣ 📄 requirements.txt        # Python dependencies
  ┣ 📄 LICENSE                 # MIT License
  ┗ 📄 README.md               # You are here
@@ -133,7 +133,7 @@ Input Image (224×224)
 
 ![Python](https://img.shields.io/badge/-Python-3776AB?style=flat-square&logo=python&logoColor=white)
 ![PyTorch](https://img.shields.io/badge/-PyTorch-EE4C2C?style=flat-square&logo=pytorch&logoColor=white)
-![Streamlit](https://img.shields.io/badge/-Streamlit-FF4B4B?style=flat-square&logo=streamlit&logoColor=white)
+![Gradio](https://img.shields.io/badge/-Gradio-FF4B4B?style=flat-square&logo=gradio&logoColor=white)
 ![NumPy](https://img.shields.io/badge/-NumPy-013243?style=flat-square&logo=numpy&logoColor=white)
 ![Pillow](https://img.shields.io/badge/-Pillow-3776AB?style=flat-square&logo=python&logoColor=white)
 ![Kaggle](https://img.shields.io/badge/-Kaggle-20BEFF?style=flat-square&logo=kaggle&logoColor=white)
@@ -198,17 +198,17 @@ The notebook covers:
 
 ---
 
-## 🖥️ Streamlit App
+## 🖥️ Gradio App
 
 An interactive web application lets you upload any image, adjust the masking ratio, and observe the MAE reconstruction in real time.
 
 ### Launch the App
 
 ```bash
-streamlit run app.py
+gradio run app.py
 ```
 
-Then open your browser at `http://localhost:8501`.
+Then open your browser at `http://localhost:7860`.
 
 ### App Features
 
@@ -259,7 +259,7 @@ This project implements all required deliverables:
 - [x] Mixed Precision (AMP) training on Dual T4 GPUs
 - [x] ≥5 qualitative reconstruction examples
 - [x] PSNR & SSIM metrics
-- [x] Streamlit deployment app
+- [x] Gradio deployment app
 
 ---
 
