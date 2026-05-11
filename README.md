@@ -116,9 +116,6 @@ Input Image (224×224)
 
 ```
 📦 Self-Supervised Image Representation Learning - MAE
- ┣ 📂 Model
- ┃ ┣ 📄 model_lib.py          # MAE model definition (PatchEmbed, MaskedAutoencoder)
- ┃ ┗ 📄 mae_weights.pth       # Pre-trained model weights (~411 MB)
  ┣ 📂 Notebook
  ┃ ┗ 📓 MAE_Training.ipynb    # Full Kaggle training notebook
  ┣ 📄 app.py                  # Gradio interactive app
@@ -147,21 +144,6 @@ Input Image (224×224)
 
 - Python 3.8+
 - GPU with CUDA support (recommended) or CPU
-
-### Installation
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/mae-image-representation.git
-   cd mae-image-representation
-   ```
-
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-3. **Verify the model weights** are present at `Model/mae_weights.pth`.
 
 ---
 
